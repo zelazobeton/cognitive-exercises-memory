@@ -1,23 +1,17 @@
-package com.zelazobeton.cognitiveexercisesmemory.domain.memory;
+package com.zelazobeton.cognitiveexercisesmemory.domain;
 
-import javax.persistence.Entity;
-
-import com.zelazobeton.cognitiveexercisesmemory.domain.BaseEntity;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
-@Entity
 @Getter
 @Setter
-@Builder
-@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
+@Document("memoryImgs")
 public class MemoryImg extends BaseEntity {
     private String address;
 }

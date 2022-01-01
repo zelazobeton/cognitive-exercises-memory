@@ -1,8 +1,6 @@
 package com.zelazobeton.cognitiveexercisesmemory.exception;
 
-import javax.persistence.EntityNotFoundException;
-
-public class UserNotFoundException extends EntityNotFoundException {
+public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {
         super(message);
     }

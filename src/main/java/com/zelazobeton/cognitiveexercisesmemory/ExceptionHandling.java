@@ -17,8 +17,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.io.IOException;
 import javax.naming.AuthenticationException;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.NoResultException;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -87,10 +85,10 @@ public class ExceptionHandling implements ErrorController {
 //        return this.createHttpResponse(BAD_REQUEST, exception.getMessage());
 //    }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<HttpResponse> entityNotFoundException(EntityNotFoundException exception) {
-        return this.createHttpResponse(BAD_REQUEST, exception.getMessage());
-    }
+//    @ExceptionHandler(EntityNotFoundException.class)
+//    public ResponseEntity<HttpResponse> entityNotFoundException(EntityNotFoundException exception) {
+//        return this.createHttpResponse(BAD_REQUEST, exception.getMessage());
+//    }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
@@ -104,11 +102,11 @@ public class ExceptionHandling implements ErrorController {
         return this.createHttpResponse(INTERNAL_SERVER_ERROR, this.exceptionMessageService.getMessage(EXCEPTION_HANDLING_AN_ERROR_OCCURRED_WHILE_PROCESSING_THE_REQUEST));
     }
 
-    @ExceptionHandler(NoResultException.class)
-    public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
-        log.error(exception.getMessage());
-        return this.createHttpResponse(NOT_FOUND, exception.getMessage());
-    }
+//    @ExceptionHandler(NoResultException.class)
+//    public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
+//        log.error(exception.getMessage());
+//        return this.createHttpResponse(NOT_FOUND, exception.getMessage());
+//    }
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<HttpResponse> iOException(IOException exception) {

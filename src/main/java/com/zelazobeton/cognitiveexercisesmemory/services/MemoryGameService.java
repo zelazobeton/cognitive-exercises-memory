@@ -1,7 +1,7 @@
 package com.zelazobeton.cognitiveexercisesmemory.services;
 
 import com.zelazobeton.cognitiveexercisesmemory.exception.UserNotFoundException;
-import com.zelazobeton.cognitiveexercisesmemory.model.memory.MemoryBoardDto;
+import com.zelazobeton.cognitiveexercisesmemory.model.MemoryBoardDto;
 
 public interface MemoryGameService {
     MemoryBoardDto getSavedMemoryBoardDto(String username) throws UserNotFoundException;

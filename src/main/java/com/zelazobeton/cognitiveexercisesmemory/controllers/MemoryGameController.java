@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zelazobeton.cognitiveexercisesmemory.ExceptionHandling;
 import com.zelazobeton.cognitiveexercisesmemory.HttpResponse;
 import com.zelazobeton.cognitiveexercisesmemory.constants.MessageConstants;
-import com.zelazobeton.cognitiveexercisesmemory.model.memory.MemoryBoardDto;
+import com.zelazobeton.cognitiveexercisesmemory.model.MemoryBoardDto;
 import com.zelazobeton.cognitiveexercisesmemory.services.ExceptionMessageService;
 import com.zelazobeton.cognitiveexercisesmemory.services.MemoryGameService;
 import com.zelazobeton.cognitiveexercisesmemory.services.ResourceService;

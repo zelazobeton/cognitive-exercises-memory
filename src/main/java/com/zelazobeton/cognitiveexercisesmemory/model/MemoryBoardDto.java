@@ -1,9 +1,9 @@
-package com.zelazobeton.cognitiveexercisesmemory.model.memory;
+package com.zelazobeton.cognitiveexercisesmemory.model;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.zelazobeton.cognitiveexercisesmemory.domain.memory.MemoryBoard;
+import com.zelazobeton.cognitiveexercisesmemory.domain.MemoryBoard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

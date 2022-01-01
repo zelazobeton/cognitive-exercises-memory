@@ -1,6 +1,6 @@
-package com.zelazobeton.cognitiveexercisesmemory.model.memory;
+package com.zelazobeton.cognitiveexercisesmemory.model;
 
-import com.zelazobeton.cognitiveexercisesmemory.domain.memory.MemoryTile;
+import com.zelazobeton.cognitiveexercisesmemory.domain.MemoryTile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +15,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MemoryTileDto {
     private String imgAddress;
-    private Long memoryId;
+    private String memoryId;
     private boolean uncovered;
 
     public MemoryTileDto(MemoryTile memoryTile) {
         this.imgAddress = memoryTile.getMemoryImg().getAddress();
-        this.memoryId = memoryTile.getMemory_img_id();
+        this.memoryId = memoryTile.getMemoryImgId();
         this.uncovered = memoryTile.isUncovered();
     }
 }

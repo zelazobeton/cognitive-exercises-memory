@@ -2,14 +2,12 @@ package com.zelazobeton.cognitiveexercisesmemory.repository;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import com.zelazobeton.cognitiveexercisesmemory.domain.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+@Repository
+public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findUserByUsername(String username);
-    Optional<User> findUserByEmail(String email);
-
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String username);
 }
