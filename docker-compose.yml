@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  mongo-service:
+    image: mongo
+    container_name: mongo-service
+    volumes:
+      - ./docker_tmp/mongodb/database:/data/db
+    ports:
+      - "27117:27017"
+    restart: unless-stopped

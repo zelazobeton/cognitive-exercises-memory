@@ -38,7 +38,7 @@ build/
 
 ### Docker ###
 Dockerfile
-
+docker-compose.yml
 
 ### FRONTEND GITIGNORE ###
 
