@@ -3,6 +3,7 @@ package com.zelazobeton.cognitiveexercisesmemory.services.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -20,6 +21,7 @@ import com.zelazobeton.cognitiveexercisesmemory.model.MemoryBoardDto;
 import com.zelazobeton.cognitiveexercisesmemory.repository.MemoryImgRepository;
 import com.zelazobeton.cognitiveexercisesmemory.repository.UserRepository;
 import com.zelazobeton.cognitiveexercisesmemory.services.MemoryGameService;
+import com.zelazobeton.cognitiveexercisesmemory.services.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,17 +30,22 @@ import lombok.extern.slf4j.Slf4j;
 public class MemoryGameServiceImpl implements MemoryGameService {
     private MemoryImgRepository memoryImgRepository;
     private UserRepository userRepository;
+    private UserService userService;
 
-    public MemoryGameServiceImpl(MemoryImgRepository memoryImgRepository,
-            UserRepository userRepository) {
+    public MemoryGameServiceImpl(MemoryImgRepository memoryImgRepository, UserRepository userRepository,
+            UserService userService) {
         this.memoryImgRepository = memoryImgRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
     public MemoryBoardDto getSavedMemoryBoardDto(String username) throws UserNotFoundException {
-        User user = this.userRepository.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
-        MemoryBoard savedMemoryBoard = user.getMemoryBoard();
+        Optional<User> user = this.userRepository.findUserByUsername(username);
+        if (user.isEmpty()) {
+            return null;
+        }
+        MemoryBoard savedMemoryBoard = user.get().getMemoryBoard();
         if (savedMemoryBoard == null) {
             return null;
         }
@@ -46,7 +53,7 @@ public class MemoryGameServiceImpl implements MemoryGameService {
     }
 
     @Override
-    public MemoryBoardDto getNewMemoryBoardDto(String username, String difficultyLvl) {
+    public MemoryBoardDto getNewMemoryBoardDto(String difficultyLvl) {
         int numOfDifferentImgsNeeded;
         switch (difficultyLvl){
             case "0":
@@ -58,24 +65,11 @@ public class MemoryGameServiceImpl implements MemoryGameService {
             default:
                 numOfDifferentImgsNeeded = MemoryDiffLvl.MEDIUM.numOfImgs;
         }
-
-        User user = this.userRepository.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
-        MemoryBoard savedMemoryBoard = user.getMemoryBoard();
-        if (savedMemoryBoard != null) {
-            savedMemoryBoard.setUser(null);
-        }
-        user.setMemoryBoard(this.generateMemoryBoard(numOfDifferentImgsNeeded));
-        User savedUser = this.userRepository.save(user);
-        return new MemoryBoardDto(savedUser.getMemoryBoard());
+        return new MemoryBoardDto(this.generateMemoryBoard(numOfDifferentImgsNeeded));
     }
 
     @Override
-    public void saveGame(String username, MemoryBoardDto memoryBoardDto) {
-        User user = this.userRepository.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
-        MemoryBoard savedMemoryBoard = user.getMemoryBoard();
-        if (savedMemoryBoard != null) {
-            savedMemoryBoard.setUser(null);
-        }
+    public void saveGame(User user, MemoryBoardDto memoryBoardDto) {
         MemoryBoard newMemoryBoard = this.createMemoryBoardFromMemoryBoardDto(memoryBoardDto, user);
         user.setMemoryBoard(newMemoryBoard);
         this.userRepository.save(user);
@@ -103,7 +97,6 @@ public class MemoryGameServiceImpl implements MemoryGameService {
             return new MemoryTile(img, img.getId(), tile.isUncovered());
         }).collect(Collectors.toList());
         return MemoryBoard.builder()
-                .user(user)
                 .memoryTiles(tiles)
                 .numOfUncoveredTiles(memoryBoardDto.getNumOfUncoveredTiles())
                 .build();
@@ -111,7 +104,7 @@ public class MemoryGameServiceImpl implements MemoryGameService {
 
     private MemoryBoard generateMemoryBoard(int numOfDifferentImgsNeeded) {
         List<MemoryTile> tiles = this.generateTiles(numOfDifferentImgsNeeded);
-        return MemoryBoard.builder().memoryTiles(tiles).numOfUncoveredTiles(0).user(null).build();
+        return MemoryBoard.builder().memoryTiles(tiles).numOfUncoveredTiles(0).build();
     }
 
     private List<MemoryTile> generateTiles(int numOfImgs) {

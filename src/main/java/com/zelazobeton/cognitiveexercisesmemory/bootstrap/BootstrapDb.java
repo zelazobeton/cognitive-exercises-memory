@@ -27,11 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Profile("bootstrap")
 public class BootstrapDb implements CommandLineRunner {
-    @Value("${server-host}")
-    private String serverHost;
-    @Value("${server.port}")
-    private String serverPort;
-    private String serverAddress = this.serverHost + ":" + this.serverPort;
+    @Value("${server-address}")
+    private String serverAddress;
     private final MemoryImgRepository memoryImgRepository;
     private final ResourceService resourceService;
 

@@ -2,6 +2,7 @@ package com.zelazobeton.cognitiveexercisesmemory.domain;
 
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -18,10 +19,6 @@ import lombok.Setter;
 @Document("memoryBoards")
 public class MemoryBoard extends BaseEntity {
     private Integer numOfUncoveredTiles;
-
 //    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemoryTile> memoryTiles;
-
-//    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private User user;
 }

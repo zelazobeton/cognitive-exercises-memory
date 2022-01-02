@@ -22,22 +22,26 @@ import org.springframework.web.bind.annotation.RestController;
 import com.zelazobeton.cognitiveexercisesmemory.ExceptionHandling;
 import com.zelazobeton.cognitiveexercisesmemory.HttpResponse;
 import com.zelazobeton.cognitiveexercisesmemory.constants.MessageConstants;
+import com.zelazobeton.cognitiveexercisesmemory.domain.User;
 import com.zelazobeton.cognitiveexercisesmemory.model.MemoryBoardDto;
 import com.zelazobeton.cognitiveexercisesmemory.services.ExceptionMessageService;
 import com.zelazobeton.cognitiveexercisesmemory.services.MemoryGameService;
 import com.zelazobeton.cognitiveexercisesmemory.services.ResourceService;
+import com.zelazobeton.cognitiveexercisesmemory.services.UserService;
 
 @RestController
 @RequestMapping(path = "/v1/memory")
 public class MemoryGameController extends ExceptionHandling {
     private final MemoryGameService memoryGameService;
     private final ResourceService resourceService;
+    private final UserService userService;
 
     public MemoryGameController(ExceptionMessageService exceptionMessageService, MemoryGameService memoryGameService,
-            ResourceService resourceService) {
+            ResourceService resourceService, UserService userService) {
         super(exceptionMessageService);
         this.memoryGameService = memoryGameService;
         this.resourceService = resourceService;
+        this.userService = userService;
     }
 
     @GetMapping(path = "/img/{fileName}", produces = IMAGE_JPEG_VALUE)
@@ -47,9 +51,8 @@ public class MemoryGameController extends ExceptionHandling {
 
     @GetMapping(path = "/game", produces = { "application/json" }, params = "level")
     @RolesAllowed("ROLE_ce-user")
-    public ResponseEntity<MemoryBoardDto> getNewMemoryBoard(
-            Principal principal, @RequestParam("level") String difficultyLvl) {
-        MemoryBoardDto board = this.memoryGameService.getNewMemoryBoardDto(principal.getName(), difficultyLvl);
+    public ResponseEntity<MemoryBoardDto> getNewMemoryBoard( @RequestParam("level") String difficultyLvl) {
+        MemoryBoardDto board = this.memoryGameService.getNewMemoryBoardDto(difficultyLvl);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
@@ -64,7 +67,8 @@ public class MemoryGameController extends ExceptionHandling {
     @RolesAllowed("ROLE_ce-user")
     public ResponseEntity<HttpResponse> saveGame(Principal principal,
             @RequestBody MemoryBoardDto memoryBoardDto) {
-        this.memoryGameService.saveGame(principal.getName(), memoryBoardDto);
+        User user = this.userService.findUserOrCreateNewOne(principal);
+        this.memoryGameService.saveGame(user, memoryBoardDto);
         return new ResponseEntity<>(new HttpResponse(OK, this.exceptionMessageService.getMessage(MessageConstants.MEMORY_GAME_CONTROLLER_GAME_SAVED)), OK);
     }
 

@@ -1,5 +1,6 @@
 package com.zelazobeton.cognitiveexercisesmemory.domain;
 
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Document("memoryTiles")
 public class MemoryTile extends BaseEntity {
+    @DBRef
     private MemoryImg memoryImg;
     private String memoryImgId;
     private boolean uncovered;
