@@ -1,7 +1,9 @@
 package com.zelazobeton.cognitiveexercisesmemory.bootstrap;
 
+import static com.zelazobeton.cognitiveexercisesmemory.constants.FileConstants.FORWARD_SLASH;
+import static com.zelazobeton.cognitiveexercisesmemory.constants.FileConstants.IMG_FOLDER;
 import static com.zelazobeton.cognitiveexercisesmemory.constants.FileConstants.MEMORY_IMG_FOLDER;
-import static com.zelazobeton.cognitiveexercisesmemory.constants.FileConstants.MEMORY_IMG_PATH;
+import static com.zelazobeton.cognitiveexercisesmemory.constants.FileConstants.MICROSERVICE_NAME;
 import static com.zelazobeton.cognitiveexercisesmemory.constants.FileConstants.VERSION_1;
 
 import java.io.File;
@@ -27,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Profile("bootstrap")
 public class BootstrapDb implements CommandLineRunner {
-    @Value("${server-address}")
+    @Value("${gateway-address}")
     private String serverAddress;
     private final MemoryImgRepository memoryImgRepository;
     private final ResourceService resourceService;
@@ -40,13 +42,13 @@ public class BootstrapDb implements CommandLineRunner {
     private void loadMemoryImages() {
         Path memoryImagesFolder = this.resourceService.getPath(MEMORY_IMG_FOLDER);
         List<MemoryImg> memoryImgs = new ArrayList<>();
-        for(File file: Objects.requireNonNull(memoryImagesFolder.toFile().listFiles())) {
+        for (File file : Objects.requireNonNull(memoryImagesFolder.toFile().listFiles())) {
             if (!file.isDirectory()) {
-                String imgAddress = this.serverAddress + VERSION_1 + MEMORY_IMG_PATH + file.getName();
+                String imgAddress = this.serverAddress + MICROSERVICE_NAME + VERSION_1 + IMG_FOLDER + FORWARD_SLASH +
+                        file.getName();
                 memoryImgs.add(MemoryImg.builder().address(imgAddress).build());
             }
         }
         this.memoryImgRepository.saveAll(memoryImgs);
     }
-
 }

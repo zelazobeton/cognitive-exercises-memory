@@ -30,7 +30,7 @@ import com.zelazobeton.cognitiveexercisesmemory.services.ResourceService;
 import com.zelazobeton.cognitiveexercisesmemory.services.UserService;
 
 @RestController
-@RequestMapping(path = "/v1/memory")
+@RequestMapping(path = "/v1")
 public class MemoryGameController extends ExceptionHandling {
     private final MemoryGameService memoryGameService;
     private final ResourceService resourceService;
