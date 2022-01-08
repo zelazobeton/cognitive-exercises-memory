@@ -12,6 +12,7 @@
 	<groupId>com.zelazobeton</groupId>
 	<artifactId>cognitive-exercises-memory</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>cognitive-exercises-memory</name>
 	<description>Memory game microservice for cognitive exercises app</description>
 
@@ -66,21 +67,34 @@
 	</dependencies>
 
 	<build>
-		<plugins>
+		<finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<configuration>
+							<target>
+									<mkdir dir="${project.build.directory}/resources/memory-pictures" />
+									<copy todir="${project.build.directory}/resources/memory-pictures">
+									<fileset dir="${project.basedir}/src/main/resources/memory-pictures-for-docker-jar" />
+								</copy>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-		</plugins>
-	</build>
+    </plugins>
+  </build>
 
 	<dependencyManagement>
 		<dependencies>
