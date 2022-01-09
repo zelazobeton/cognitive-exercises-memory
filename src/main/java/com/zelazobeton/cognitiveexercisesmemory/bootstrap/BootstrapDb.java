@@ -29,8 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Profile("bootstrap")
 public class BootstrapDb implements CommandLineRunner {
-    @Value("${gateway-address}")
-    private String serverAddress;
+    @Value("${frontend-address}")
+    private String frontendAddress;
     private final MemoryImgRepository memoryImgRepository;
     private final ResourceService resourceService;
 
@@ -44,7 +44,7 @@ public class BootstrapDb implements CommandLineRunner {
         List<MemoryImg> memoryImgs = new ArrayList<>();
         for (File file : Objects.requireNonNull(memoryImagesFolder.toFile().listFiles())) {
             if (!file.isDirectory()) {
-                String imgAddress = this.serverAddress + MICROSERVICE_NAME + VERSION_1 + IMG_FOLDER + FORWARD_SLASH +
+                String imgAddress = this.frontendAddress + MICROSERVICE_NAME + VERSION_1 + IMG_FOLDER + FORWARD_SLASH +
                         file.getName();
                 memoryImgs.add(MemoryImg.builder().address(imgAddress).build());
             }

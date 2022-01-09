@@ -15,8 +15,11 @@ services:
       - "8082:8082"
     depends_on:
       - mongo-service
+#      - rabbit-service
+#      - cognitive-exercises-gateway
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://user:password@mongo-service:27017
 #      SPRING_RABBITMQ_HOST: rabbit-service
-      GATEWAY-ADDRESS: http://localhost:9090
-      KEYCLOAK_AUTH-SERVER-URL: http://host.docker.internal:8080/auth
+#      SPRING_RABBITMQ_PORT: 5672
+#      KEYCLOAK_AUTH-SERVER-URL: http://keycloak-service:8080/auth
+#      FRONTEND-ADDRESS: http://localhost:80/api
