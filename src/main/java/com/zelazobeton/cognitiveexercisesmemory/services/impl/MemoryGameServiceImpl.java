@@ -1,5 +1,6 @@
 package com.zelazobeton.cognitiveexercisesmemory.services.impl;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,12 +17,14 @@ import com.zelazobeton.cognitiveexercisesmemory.domain.User;
 import com.zelazobeton.cognitiveexercisesmemory.domain.MemoryBoard;
 import com.zelazobeton.cognitiveexercisesmemory.domain.MemoryImg;
 import com.zelazobeton.cognitiveexercisesmemory.domain.MemoryTile;
+import com.zelazobeton.cognitiveexercisesmemory.domain.messages.SaveScoreMessage;
 import com.zelazobeton.cognitiveexercisesmemory.exception.UserNotFoundException;
 import com.zelazobeton.cognitiveexercisesmemory.model.MemoryBoardDto;
 import com.zelazobeton.cognitiveexercisesmemory.repository.MemoryImgRepository;
 import com.zelazobeton.cognitiveexercisesmemory.repository.UserRepository;
 import com.zelazobeton.cognitiveexercisesmemory.services.MemoryGameService;
 import com.zelazobeton.cognitiveexercisesmemory.services.UserService;
+import com.zelazobeton.cognitiveexercisesmemory.services.rabbitMQ.MessagePublisherService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,12 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 public class MemoryGameServiceImpl implements MemoryGameService {
     private MemoryImgRepository memoryImgRepository;
     private UserRepository userRepository;
+    private MessagePublisherService messagePublisherService;
     private UserService userService;
 
     public MemoryGameServiceImpl(MemoryImgRepository memoryImgRepository, UserRepository userRepository,
-            UserService userService) {
+            MessagePublisherService messagePublisherService, UserService userService) {
         this.memoryImgRepository = memoryImgRepository;
         this.userRepository = userRepository;
+        this.messagePublisherService = messagePublisherService;
         this.userService = userService;
     }
 
@@ -70,28 +75,26 @@ public class MemoryGameServiceImpl implements MemoryGameService {
 
     @Override
     public void saveGame(User user, MemoryBoardDto memoryBoardDto) {
-        MemoryBoard newMemoryBoard = this.createMemoryBoardFromMemoryBoardDto(memoryBoardDto, user);
+        MemoryBoard newMemoryBoard = this.createMemoryBoardFromMemoryBoardDto(memoryBoardDto);
         user.setMemoryBoard(newMemoryBoard);
         this.userRepository.save(user);
     }
 
     @Override
-    public int saveScore(String username, MemoryBoardDto memoryBoardDto) {
-//        User user = this.userRepository.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
-//        Portfolio portfolio = user.getPortfolio();
-//        int score = this.calculateScore(memoryBoardDto);
-//        portfolio.setTotalScore(portfolio.getTotalScore() + score);
-//        this.portfolioRepository.save(portfolio);
-//        return score;
-        return 0;
+    public int saveScore(Principal principal, MemoryBoardDto memoryBoardDto) {
+        Integer score = this.calculateScore(memoryBoardDto);
+        String userExternalId = this.userService.getPrincipalExternalId(principal);
+        SaveScoreMessage saveScoreMessage = new SaveScoreMessage(userExternalId, score);
+        this.messagePublisherService.publishMessage(saveScoreMessage);
+        return score;
     }
 
-    private int calculateScore(MemoryBoardDto memoryBoardDto) {
+    private Integer calculateScore(MemoryBoardDto memoryBoardDto) {
         int score = memoryBoardDto.getMemoryTiles().size() * 4 - memoryBoardDto.getNumOfUncoveredTiles() / 2;
         return Math.max(score, memoryBoardDto.getMemoryTiles().size());
     }
 
-    private MemoryBoard createMemoryBoardFromMemoryBoardDto(MemoryBoardDto memoryBoardDto, User user) {
+    private MemoryBoard createMemoryBoardFromMemoryBoardDto(MemoryBoardDto memoryBoardDto) {
         List<MemoryTile> tiles = memoryBoardDto.getMemoryTiles().stream().map(tile -> {
             MemoryImg img = this.memoryImgRepository.findByAddress(tile.getImgAddress()).orElseThrow(RuntimeException::new);
             return new MemoryTile(img, img.getId(), tile.isUncovered());

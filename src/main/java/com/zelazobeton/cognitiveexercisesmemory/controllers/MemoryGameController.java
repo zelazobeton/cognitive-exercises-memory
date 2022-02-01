@@ -76,7 +76,7 @@ public class MemoryGameController extends ExceptionHandling {
     @RolesAllowed("ROLE_ce-user")
     public ResponseEntity<Integer> saveScore(Principal principal,
             @RequestBody MemoryBoardDto memoryBoardDto) {
-        return new ResponseEntity<>(this.memoryGameService.saveScore(principal.getName(), memoryBoardDto),
+        return new ResponseEntity<>(this.memoryGameService.saveScore(principal, memoryBoardDto),
                 HttpStatus.OK);
     }
 }

@@ -27,9 +27,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private User createUser(Principal principal) {
+        String externalId = this.getPrincipalExternalId(principal);
+        return User.builder().username(principal.getName()).externalId(externalId).build();
+    }
+
+    @Override
+    public String getPrincipalExternalId(Principal principal) {
         Object keycloakPrincipalObject = ((KeycloakAuthenticationToken) principal).getPrincipal();
         KeycloakPrincipal keycloakPrincipal = (KeycloakPrincipal) keycloakPrincipalObject;
-        String externalId = keycloakPrincipal.getKeycloakSecurityContext().getToken().getSubject();
-        return User.builder().username(principal.getName()).externalId(externalId).build();
+        return keycloakPrincipal.getKeycloakSecurityContext().getToken().getSubject();
     }
 }

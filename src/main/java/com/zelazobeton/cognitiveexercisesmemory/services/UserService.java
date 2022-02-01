@@ -6,4 +6,5 @@ import com.zelazobeton.cognitiveexercisesmemory.domain.User;
 
 public interface UserService {
     User findUserOrCreateNewOne(Principal principal);
+    String getPrincipalExternalId(Principal principal);
 }
