@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.zelazobeton.cognitiveexercisesmemory.constants.MemoryDiffLvl;
@@ -32,6 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class MemoryGameServiceImpl implements MemoryGameService {
+    public static final int SAVE_GAME_ARTIFICIAL_DELAY = 5 * 1000;
+
     private MemoryImgRepository memoryImgRepository;
     private UserRepository userRepository;
     private MessagePublisherService messagePublisherService;
@@ -61,23 +62,25 @@ public class MemoryGameServiceImpl implements MemoryGameService {
     @Override
     public MemoryBoardDto getNewMemoryBoardDto(String difficultyLvl) {
         int numOfDifferentImgsNeeded;
-        switch (difficultyLvl){
-            case "0":
-                numOfDifferentImgsNeeded = MemoryDiffLvl.EASY.numOfImgs;
-                break;
-            case "2":
-                numOfDifferentImgsNeeded = MemoryDiffLvl.HARD.numOfImgs;
-                break;
-            default:
-                numOfDifferentImgsNeeded = MemoryDiffLvl.MEDIUM.numOfImgs;
+        switch (difficultyLvl) {
+        case "0":
+            numOfDifferentImgsNeeded = MemoryDiffLvl.EASY.numOfImgs;
+            break;
+        case "2":
+            numOfDifferentImgsNeeded = MemoryDiffLvl.HARD.numOfImgs;
+            break;
+        default:
+            numOfDifferentImgsNeeded = MemoryDiffLvl.MEDIUM.numOfImgs;
         }
         return new MemoryBoardDto(this.generateMemoryBoard(numOfDifferentImgsNeeded));
     }
 
     @Override
-    public void saveGame(User user, MemoryBoardDto memoryBoardDto) {
+    @Async
+    public void saveGame(User user, MemoryBoardDto memoryBoardDto) throws InterruptedException {
         MemoryBoard newMemoryBoard = this.createMemoryBoardFromMemoryBoardDto(memoryBoardDto);
         user.setMemoryBoard(newMemoryBoard);
+        Thread.sleep(SAVE_GAME_ARTIFICIAL_DELAY);
         this.userRepository.save(user);
     }
 
@@ -97,7 +100,8 @@ public class MemoryGameServiceImpl implements MemoryGameService {
 
     private MemoryBoard createMemoryBoardFromMemoryBoardDto(MemoryBoardDto memoryBoardDto) {
         List<MemoryTile> tiles = memoryBoardDto.getMemoryTiles().stream().map(tile -> {
-            MemoryImg img = this.memoryImgRepository.findByAddress(tile.getImgAddress()).orElseThrow(RuntimeException::new);
+            MemoryImg img = this.memoryImgRepository.findByAddress(tile.getImgAddress())
+                    .orElseThrow(RuntimeException::new);
             return new MemoryTile(img, img.getId(), tile.isUncovered());
         }).collect(Collectors.toList());
         return MemoryBoard.builder()

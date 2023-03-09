@@ -51,7 +51,7 @@ public class MemoryGameController extends ExceptionHandling {
 
     @GetMapping(path = "/game", produces = { "application/json" }, params = "level")
     @RolesAllowed("ROLE_ce-user")
-    public ResponseEntity<MemoryBoardDto> getNewMemoryBoard( @RequestParam("level") String difficultyLvl) {
+    public ResponseEntity<MemoryBoardDto> getNewMemoryBoard(@RequestParam("level") String difficultyLvl) {
         MemoryBoardDto board = this.memoryGameService.getNewMemoryBoardDto(difficultyLvl);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
@@ -65,18 +65,17 @@ public class MemoryGameController extends ExceptionHandling {
 
     @PostMapping(path = "/game")
     @RolesAllowed("ROLE_ce-user")
-    public ResponseEntity<HttpResponse> saveGame(Principal principal,
-            @RequestBody MemoryBoardDto memoryBoardDto) {
+    public ResponseEntity<HttpResponse> saveGame(Principal principal, @RequestBody MemoryBoardDto memoryBoardDto)
+            throws InterruptedException {
         User user = this.userService.findUserOrCreateNewOne(principal);
         this.memoryGameService.saveGame(user, memoryBoardDto);
-        return new ResponseEntity<>(new HttpResponse(OK, this.exceptionMessageService.getMessage(MessageConstants.MEMORY_GAME_CONTROLLER_GAME_SAVED)), OK);
+        return new ResponseEntity<>(new HttpResponse(OK,
+                this.exceptionMessageService.getMessage(MessageConstants.MEMORY_GAME_CONTROLLER_GAME_SAVED)), OK);
     }
 
     @PostMapping(path = "/score")
     @RolesAllowed("ROLE_ce-user")
-    public ResponseEntity<Integer> saveScore(Principal principal,
-            @RequestBody MemoryBoardDto memoryBoardDto) {
-        return new ResponseEntity<>(this.memoryGameService.saveScore(principal, memoryBoardDto),
-                HttpStatus.OK);
+    public ResponseEntity<Integer> saveScore(Principal principal, @RequestBody MemoryBoardDto memoryBoardDto) {
+        return new ResponseEntity<>(this.memoryGameService.saveScore(principal, memoryBoardDto), HttpStatus.OK);
     }
 }
