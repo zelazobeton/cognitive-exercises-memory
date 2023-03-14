@@ -3,8 +3,6 @@ package com.zelazobeton.cognitiveexercisesmemory.services.impl;
 import java.security.Principal;
 import java.util.Optional;
 
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.zelazobeton.cognitiveexercisesmemory.domain.User;
@@ -32,8 +30,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String getPrincipalExternalId(Principal principal) {
-        Object keycloakPrincipalObject = ((KeycloakAuthenticationToken) principal).getPrincipal();
-        KeycloakPrincipal keycloakPrincipal = (KeycloakPrincipal) keycloakPrincipalObject;
-        return keycloakPrincipal.getKeycloakSecurityContext().getToken().getSubject();
+        return principal.getName();
     }
 }

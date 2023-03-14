@@ -7,10 +7,10 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 import java.io.IOException;
 import java.security.Principal;
-import javax.annotation.security.RolesAllowed;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,21 +50,21 @@ public class MemoryGameController extends ExceptionHandling {
     }
 
     @GetMapping(path = "/game", produces = { "application/json" }, params = "level")
-    @RolesAllowed("ROLE_ce-user")
+    @PreAuthorize("hasAuthority(app-user)")
     public ResponseEntity<MemoryBoardDto> getNewMemoryBoard(@RequestParam("level") String difficultyLvl) {
         MemoryBoardDto board = this.memoryGameService.getNewMemoryBoardDto(difficultyLvl);
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
     @GetMapping(path = "/game", produces = { "application/json" })
-    @RolesAllowed("ROLE_ce-user")
+    @PreAuthorize("hasAuthority(app-user)")
     public ResponseEntity<MemoryBoardDto> getSavedMemoryBoard(Principal principal) {
         MemoryBoardDto board = this.memoryGameService.getSavedMemoryBoardDto(principal.getName());
         return new ResponseEntity<>(board, HttpStatus.OK);
     }
 
     @PostMapping(path = "/game")
-    @RolesAllowed("ROLE_ce-user")
+    @PreAuthorize("hasAuthority(app-user)")
     public ResponseEntity<HttpResponse> saveGame(Principal principal, @RequestBody MemoryBoardDto memoryBoardDto)
             throws InterruptedException {
         User user = this.userService.findUserOrCreateNewOne(principal);
@@ -74,7 +74,7 @@ public class MemoryGameController extends ExceptionHandling {
     }
 
     @PostMapping(path = "/score")
-    @RolesAllowed("ROLE_ce-user")
+    @PreAuthorize("hasAuthority(app-user)")
     public ResponseEntity<Integer> saveScore(Principal principal, @RequestBody MemoryBoardDto memoryBoardDto) {
         return new ResponseEntity<>(this.memoryGameService.saveScore(principal, memoryBoardDto), HttpStatus.OK);
     }
