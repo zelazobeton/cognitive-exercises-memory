@@ -20,7 +20,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().authenticated();
+        http.authorizeRequests().anyRequest().permitAll();
         http.oauth2ResourceServer(resourceServer -> resourceServer.jwt(
                 jwt -> jwt.jwtAuthenticationConverter(this.jwtAuthenticationConverter)));
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

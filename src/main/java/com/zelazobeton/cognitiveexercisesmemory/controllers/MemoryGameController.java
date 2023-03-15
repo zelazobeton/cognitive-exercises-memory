@@ -7,7 +7,9 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.concurrent.TimeUnit;
 
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,8 +47,10 @@ public class MemoryGameController extends ExceptionHandling {
     }
 
     @GetMapping(path = "/img/{fileName}", produces = IMAGE_JPEG_VALUE)
-    public byte[] getMemoryTileImage(@PathVariable("fileName") String fileName) throws IOException {
-        return this.resourceService.getResource(MEMORY_IMG_FOLDER + FORWARD_SLASH + fileName);
+    public ResponseEntity<byte[]> getMemoryTileImage(@PathVariable("fileName") String fileName) throws IOException {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(300, TimeUnit.SECONDS).cachePublic())
+                .body(this.resourceService.getResource(MEMORY_IMG_FOLDER + FORWARD_SLASH + fileName));
     }
 
     @GetMapping(path = "/game", produces = { "application/json" }, params = "level")
